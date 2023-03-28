@@ -20,17 +20,18 @@ module.exports = {
   // Get. find user by Id
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
+      .populate({ path: "reactions", select: "-__v" })
       .select("-__v")
       .then(thought =>
         !thought
           ? res.status(404).json({ message: "No thought with that ID" })
-          : res.json(thought)
+          : res.json({thought})
       )
       .catch(err => res.status(500).json(err));
   },
   // Post.create user
   createThought(req, res) {
-    User.findOne({ username: req.body.username })
+    User.findOne({ _id: req.body.userId })
       .then(user => {
         if (!user)
           res.status(404).json({ message: "No user with that username" });
@@ -38,7 +39,7 @@ module.exports = {
           Thought.create(req.body)
             .then(thought => {
               User.findOneAndUpdate(
-                { username: req.body.username },
+                { _id: req.body.userId },
                 { $addToSet: { thoughts: thought._id } },
                 { new: true }
               );
@@ -71,6 +72,17 @@ module.exports = {
         !thought
           ? res.status(404).json({
               message: "User deleted, but no courses found",
+            })
+            : User.findOneAndUpdate(
+              { user: req.params.userId },
+              { $pull: { thoughts: req.params.thoughtId } },
+              { new: true }
+            )
+      )
+      .then((user) =>
+        !user
+          ? res.status(404).json({
+              message: "Thought deleted, but no user found",
             })
           : res.json({ message: "thought successfully deleted" })
       )
