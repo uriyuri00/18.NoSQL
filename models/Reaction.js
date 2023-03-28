@@ -1,10 +1,11 @@
-const { Schema, model } = require('mongoose');
+const { Schema, Types } = require('mongoose');
+
 
 const reactionSchema = new Schema(
     {
         reactionId: {
             type : Schema.Types.ObjectId,
-            default: () => new Schema.Types.ObjectId // 고치기 new Types.ObjectId 여기서 타입은 뭘가
+            default: () => new Types.ObjectId()
         },
         reactionBody:{
             type : String,
@@ -24,9 +25,15 @@ const reactionSchema = new Schema(
     {
         toJSON: {
           getters: true,
+          virtual: true
         },
         id: false,
       }
 )
+// Create a virtual called reactionCount that retrieves the length of the reactions array field on query.
+
+// reactionSchema.virtual('reactionCount').get(function(){
+//     return this.reactions.length;
+// })
 
 module.exports = reactionSchema; 

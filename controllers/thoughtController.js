@@ -4,9 +4,19 @@ module.exports = {
   //Get. find all thoughts
   getThoughts(req, res) {
     Thought.find()
-      .then(toughts => res.json(toughts))
-      .catch(err => res.status(500).json(err));
-  },
+    .sort({ createdAt: -1 })
+    .then((dbThoughtData) => {
+      res.json(dbThoughtData);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+},
+
+  //     .then(thoughts => res.json(thoughts))
+  //     .catch(err => res.status(500).json(err));
+  // },
   // Get. find user by Id
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
@@ -56,7 +66,7 @@ module.exports = {
   },
   // Delete user
   deleteThought(req, res) {
-    Thought.findOneAndRemove({ _id: req.params.thoughtId })
+    Thought.findOneAndDelete({ _id: req.params.thoughtId })
       .then(thought =>
         !thought
           ? res.status(404).json({
@@ -89,10 +99,10 @@ module.exports = {
       .catch(err => res.status(500).json(err));
   },
 
-  removeReaction(req, res) {
-    Thought.findOneAndRemove(
+  deleteReaction(req, res) {
+    Thought.findOneAndUpdate( // 지우는것이 아니고 한부분만 지우는것이라서 업데이트
       { _id: req.params.thoughtId },
-      { $pull: { assignment: { assignmentId: req.params.reactionId } } },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
       { runValidators: true, new: true }
     )
       .then(thought =>

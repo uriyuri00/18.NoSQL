@@ -2,7 +2,7 @@ const { connect, connection } = require('mongoose');
 
 
 const connectionString =
-  process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/studentsDB'; // 이건 뭔가요?
+  process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/studentsDB'; 
 
 connect(connectionString, {
   useNewUrlParser: true,

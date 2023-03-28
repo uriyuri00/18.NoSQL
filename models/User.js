@@ -16,23 +16,28 @@ const userSchema = new Schema(
             required: true,
             
         },
-        thoughts: {
+        thoughts: [{
             type: Schema.Types.ObjectId,
-            ref: 'thought', // model thought
-        },
-        friends: {
+            ref: 'Thought', // model thought
+        }],
+        friends: [{
             type : Schema.Types.ObjectId,
-            ref: 'user'
-        },
+            ref: 'User'
+        }],
     },
         {
             toJSON: {
-              getters: true, // 이건 무엇을 마하나? 
+              virtuals: true,
             },
-            id: false, // 왜 false? 이건 뭐지? 왜 투제인슨이랑 같이 묶여있나?
+            id: false, // 
           }
     );
 
-const User = model('user', userSchema)
+    //create a virtual called friendCount  that retrives the length of the user's friends array field on query
+    userSchema.virtual('friendCount').get(function(){
+        return this.friends.length;
+    })
+
+const User = model('User', userSchema)
 
 module.exports = User;
